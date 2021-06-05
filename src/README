@@ -1,0 +1,3 @@
+Get GTFS source data from:
+https://www.vbb.de/fileadmin/user_upload/VBB/Dokumente/API-Datensaetze/GTFS.zip
+and put the extracted files in package data (locate in package loadData)
