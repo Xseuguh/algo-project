@@ -1,50 +1,52 @@
 package Display;
 
 import Graph.*;
-import loadData.Data;
 
 import javax.swing.JPanel;
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class DrawSubway extends JPanel implements MouseListener, MouseMotionListener {
 
-    private Graph graph;
-    private Map<Vertex, int[]> cartesianCoordinatesFromVertex;
-    private Data data;
-
-    private static final int PADDING_TOP = 10;
+    private static final int PADDING_TOP = 15;
     private static final int PADDING_LEFT = 10;
     private static final int HEADER_HEIGHT = 50 + Display.MENU_HEIGHT;
-    private static final int TEXT_OFFSET = 5;
-    private static final int MARKER_SIZE = 6;
+    private static final int TEXT_OFFSET = 10;
+    private static final int MARKER_SIZE = 10;
     private static final int TRIGGER_CLICK = MARKER_SIZE + 5;
 
-    private static final Map<String, Color> lineColor = new TreeMap<>();
+    private Graph graph;
+    private Menu menu;
+
+    private Map<Vertex, int[]> cartesianCoordinatesFromVertex;
 
     private int[] minimalCoord, maximalCoord;
     private int[] size;
 
     private Vertex startStation, endStation, hoverStation;
 
-    public DrawSubway(Graph graph, Data data, int[] initialSize) {
+    private List<Vertex> path;
+
+    public DrawSubway(Graph graph, int[] initialSize) {
         super();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
 
         this.graph = graph;
         this.size = initialSize;
-        this.data = data;
 
         initOffset();
         refreshCoordinates();
 
-
+        this.path = new ArrayList<>();
     }
 
     private int[] getXYCoordinates(Vertex v) {
@@ -92,6 +94,10 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
         }
     }
 
+    public void setMenu(Menu menu) {
+        this.menu = menu;
+    }
+
     public void setSize(int[] newSize) {
         this.size = newSize;
     }
@@ -102,8 +108,7 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void paintComponent(Graphics g) {
-        g.setColor(Color.black);
-
+        g.setColor(Color.BLACK);
         for (Vertex v : graph.getAdjacencyList().keySet()) {
 
             int[] coordinates = cartesianCoordinatesFromVertex.get(v);
@@ -113,7 +118,9 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
             g.fillOval(x - (MARKER_SIZE / 2), y - (MARKER_SIZE / 2), MARKER_SIZE, MARKER_SIZE);
 
             for (Edge edge : graph.getAdjacencyList().get(v)) {
+                g.setColor(Color.BLACK);
                 Vertex n = edge.getDestination();
+
                 int[] neigbhorCoordinates = cartesianCoordinatesFromVertex.get(n);
                 int neighborX = neigbhorCoordinates[0];
                 int neighborY = neigbhorCoordinates[1];
@@ -121,10 +128,14 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
                 g.drawLine(x, y, neighborX, neighborY);
             }
         }
-        //We color the start and end station
 
+        //We display the paths
+        drawPath(this.path, Color.PINK, g);
+
+        //We color the hover station
         colorVertexAndDisplayName(hoverStation, Color.GRAY, g);
-        colorVertexAndDisplayName(startStation, Color.CYAN, g);
+        //We color the start and end station
+        colorVertexAndDisplayName(startStation, Color.BLUE, g);
         colorVertexAndDisplayName(endStation, Color.RED, g);
     }
 
@@ -135,8 +146,49 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
             int x = coordinates[0];
             int y = coordinates[1];
             g.fillOval(x - (MARKER_SIZE / 2), y - (MARKER_SIZE / 2), MARKER_SIZE, MARKER_SIZE);
-            g.drawString(v.getName(), x + TEXT_OFFSET, y + TEXT_OFFSET);
+            g.setFont(g.getFont().deriveFont(15.0f));
+            g.drawString(v.getName(), x + TEXT_OFFSET / 2, y - TEXT_OFFSET);
         }
+    }
+
+    private void drawPath(List<Vertex> path, Color color, Graphics g) {
+        g.setColor(color);
+        for (Vertex v : graph.getAdjacencyList().keySet()) {
+            if (path.contains(v)) {
+                int[] coordinates = cartesianCoordinatesFromVertex.get(v);
+                int x = coordinates[0];
+                int y = coordinates[1];
+
+                g.fillOval(x - (MARKER_SIZE / 2), y - (MARKER_SIZE / 2), MARKER_SIZE, MARKER_SIZE);
+
+                for (Edge edge : graph.getAdjacencyList().get(v)) {
+                    Vertex n = edge.getDestination();
+                    if (path.contains(n)) {
+                        int[] neigbhorCoordinates = cartesianCoordinatesFromVertex.get(n);
+                        int neighborX = neigbhorCoordinates[0];
+                        int neighborY = neigbhorCoordinates[1];
+
+                        g.drawLine(x, y, neighborX, neighborY);
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void setStartStation(Vertex station) {
+        this.startStation = station;
+        this.repaint();
+    }
+
+    public void setEndStation(Vertex station) {
+        this.endStation = station;
+        this.repaint();
+    }
+
+    public void setPath(List<Vertex> path) {
+        this.path = path;
+        this.repaint();
     }
 
     @Override
@@ -149,9 +201,10 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
 
                 if (e.getButton() == MouseEvent.BUTTON1) { //Left click = selection starting station
                     this.startStation = v;
-                } else if (e.getButton() == MouseEvent.BUTTON3) {  //Right click = selection starting station
-
+                    this.menu.setDepartureStation(v.getName());
+                } else if (e.getButton() == MouseEvent.BUTTON3) {  //Right click = selection ending station
                     this.endStation = v;
+                    this.menu.setEndingStation(v.getName());
                 }
                 this.repaint();
                 break;
@@ -186,11 +239,13 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
         boolean vertexFound = false;
         for (Vertex v : graph.getAdjacencyList().keySet()) {
             int[] c = cartesianCoordinatesFromVertex.get(v);
-            if (Math.abs((c[0] - mX)) < TRIGGER_CLICK && Math.abs((c[1] - mY)) < TRIGGER_CLICK) {
-                this.hoverStation = v;
-                this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                vertexFound = true;
-                break;
+            if (!v.equals(startStation) && !v.equals(endStation)) {
+                if (Math.abs((c[0] - mX)) < TRIGGER_CLICK && Math.abs((c[1] - mY)) < TRIGGER_CLICK) {
+                    this.hoverStation = v;
+                    this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    vertexFound = true;
+                    break;
+                }
             }
         }
         if (!vertexFound) {

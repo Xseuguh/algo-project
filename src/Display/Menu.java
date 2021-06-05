@@ -5,38 +5,72 @@ import loadData.Data;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class Menu extends JPanel {
 
-    private JComboBox<String> startingStationName, endingStationName;
+    private ScrollingMenu startingStationName, endingStationName;
     private GridLayout layout;
 
-    public Menu(Data data) {
+    private DrawSubway drawSubway;
+
+    public Menu(Data data, DrawSubway drawSubway) {
         super();
+        this.drawSubway = drawSubway;
 
-        this.startingStationName = new JComboBox<>();
-        this.startingStationName.addItem("--Select the departure station");
+        this.startingStationName = new ScrollingMenu(data, v -> drawSubway.setStartStation(v), "--Select the departure station","Start from:");
 
-        this.endingStationName = new JComboBox<>();
-        this.endingStationName.addItem("--Select the ending station");
+        this.endingStationName = new ScrollingMenu(data, v -> drawSubway.setEndStation(v), "--Select the ending station","End to:");
 
-        fillComboBoxWithStationNames(data.getStationNames());
+
+
+        JButton bfs = new JButton("Show the shortest path via BFS");
+        bfs.addActionListener(e->{
+            System.out.println("bfs");
+            //TODO Get path from bfs algorithm
+            List<Vertex> path = new ArrayList<>();
+            path.add(data.getVertexFromStationName("Innsbrucker Platz"));
+            path.add(data.getVertexFromStationName("Rathaus Schöneberg"));
+            path.add(data.getVertexFromStationName("Bayerischer Platz"));
+            path.add(data.getVertexFromStationName("Viktoria-Luise-Platz"));
+            path.add(data.getVertexFromStationName("Nollendorfplatz"));
+
+            drawSubway.setPath(path);
+        });
+        JButton dijkstra = new JButton("Show the shortest path via Dijkstra");
+        dijkstra.addActionListener(e->{
+            System.out.println("dijkstra");
+            drawSubway.setPath(new ArrayList<>());
+        });
+
+        JButton kShortestPath = new JButton("Show the k shortest paths");
+        kShortestPath.addActionListener(e->{
+            System.out.println("k shortest paths");
+        });
+
 
         layout = new GridLayout(2, 3);
 
-        this.setSize(JFrame.MAXIMIZED_HORIZ, 50);
         this.setLayout(layout);
-        this.add(new JLabel("Start from:"));
-        this.add(new JLabel("End to:"));
         this.add(startingStationName);
+        this.add(bfs);
+        this.add(dijkstra);
         this.add(endingStationName);
+        this.add(kShortestPath);
+        System.out.println(this.getHeight());
     }
 
-    private void fillComboBoxWithStationNames(Set<String> stations) {
-        for (String station : stations) {
-            this.startingStationName.addItem(station);
-            this.endingStationName.addItem(station);
-        }
+    public void setDepartureStation(String stationName) {
+        this.startingStationName.setSelectedItem(stationName);
+    }
+
+    public void setEndingStation(String stationName) {
+        this.endingStationName.setSelectedItem(stationName);
     }
 }
