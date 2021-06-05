@@ -10,25 +10,25 @@ import java.awt.event.ComponentListener;
 
 public class Display extends JFrame implements ComponentListener {
 
-    public static final int MENU_HEIGHT = 50;
+    public static final int MENU_HEIGHT = 100;
     private DrawSubway drawSubway;
     private Menu menu;
 
     public Display(String title, Graph graph, Data data) {
         super();
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setMinimumSize(new Dimension(800, 500));
+        this.setMinimumSize(new Dimension(1000, 500));
         this.setTitle(title);
         this.setLocationRelativeTo(null);
         this.addComponentListener(this);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        this.setUndecorated(true);
 
-        this.menu = new Menu(data);
+        this.drawSubway = new DrawSubway(graph, new int[]{this.getWidth(), this.getHeight()});
+        this.menu = new Menu(data, drawSubway);
+        this.drawSubway.setMenu(menu);
+
+
         this.add(menu, BorderLayout.NORTH);
-
-        System.out.println(this.menu.getHeight());
-        this.drawSubway = new DrawSubway(graph, data, new int[]{this.getWidth(), this.getHeight()});
         this.add(drawSubway);
 
         this.setVisible(true);
