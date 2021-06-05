@@ -31,28 +31,33 @@ public class Main {
         //End of graph initialization
 
         /*
+            Display graph
+         */
+        new Display("Berlin subway", graph, data);
+
+        /*
             Do something with the graph
          */
-       System.out.println("\nBerlin subway:");
-       data.displayLinesWithStations();
-
-       System.out.println("\nAdjacency list:");
-       graph.displayAdjacencyList();
-
-       Map<Vertex, Set<Edge>> adjacencyList = graph.getAdjacencyList();
-
-       String startName = "Alexanderplatz";
+//        System.out.println("\nBerlin subway:");
+//        data.displayLinesWithStations();
+//
+//        System.out.println("\nAdjacency list:");
+//        graph.displayAdjacencyList();
+//
+//        Map<Vertex, Set<Edge>> adjacencyList = graph.getAdjacencyList();
+//
+//        String startName = "Alexanderplatz";
+////        Vertex startVertex = data.getStartingStationFromStationName(startName);
 //        Vertex startVertex = data.getStartingStationFromStationName(startName);
-       Vertex startVertex = data.getStartingStationFromStationName(startName);
-
-       System.out.println("\nStarting station: " + startVertex.getName() + " (id: " + startVertex.getId()
-               + ", coordinates: " + startVertex.getLatitude() + "," + startVertex.getLongitude() + ")" +
-               "\nThis stations has " + adjacencyList.get(startVertex).size() + " neighbors:");
-       for (Edge edge : adjacencyList.get(startVertex)) {
-           Vertex destination = edge.getDestination();
-           System.out.println("\t- " + destination.getName() + "(id: " + destination.getId()
-                   + ", coordinates: " + destination.getLatitude() + "," + destination.getLongitude() + ")" +
-                   "\n\tDistance from starting station: " + edge.getWeight() + "m");
-       }
+//
+//        System.out.println("\nStarting station: " + startVertex.getName() + " (id: " + startVertex.getId()
+//                + ", coordinates: " + startVertex.getLatitude() + "," + startVertex.getLongitude() + ")" +
+//                "\nThis stations has " + adjacencyList.get(startVertex).size() + " neighbors:");
+//        for (Edge edge : adjacencyList.get(startVertex)) {
+//            Vertex destination = edge.getDestination();
+//            System.out.println("\t- " + destination.getName() + "(id: " + destination.getId()
+//                    + ", coordinates: " + destination.getLatitude() + "," + destination.getLongitude() + ")" +
+//                    "\n\tDistance from starting station: " + edge.getWeight() + "m");
+//        }
     }
 }
