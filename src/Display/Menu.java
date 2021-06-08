@@ -63,7 +63,8 @@ public class Menu extends JPanel {
         this.add(dijkstra);
         this.add(endingStationName);
         this.add(kShortestPath);
-        System.out.println(this.getHeight());
+
+        this.setBackground(Color.WHITE);
     }
 
     public void setDepartureStation(String stationName) {
