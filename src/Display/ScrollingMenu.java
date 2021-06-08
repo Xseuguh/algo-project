@@ -34,6 +34,8 @@ public class ScrollingMenu extends JPanel {
 
         this.add(new JLabel(title));
         this.add(scrollMenuList);
+
+        this.setBackground(Color.WHITE);
     }
 
     public void setSelectedItem(String stationName) {

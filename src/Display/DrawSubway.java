@@ -16,8 +16,9 @@ import java.util.Map;
 
 public class DrawSubway extends JPanel implements MouseListener, MouseMotionListener {
 
-    private static final int PADDING_TOP = 15;
-    private static final int PADDING_LEFT = 10;
+    private static final int PADDING_TOP = 30;
+    private static final int PADDING_LEFT = 20;
+    private static final int PADDING_RIGHT = 100;
     private static final int HEADER_HEIGHT = 50 + Display.MENU_HEIGHT;
     private static final int TEXT_OFFSET = 10;
     private static final int MARKER_SIZE = 10;
@@ -47,6 +48,8 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
         refreshCoordinates();
 
         this.path = new ArrayList<>();
+
+        this.setBackground(Color.WHITE);
     }
 
     private int[] getXYCoordinates(Vertex v) {
@@ -88,7 +91,7 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
             int rawX = coord[0];
             int rawY = coord[1];
             //We project our raw coordinates on our JPanel
-            double x = (this.size[0]) * (double) (rawX - (minimalCoord[0] - PADDING_LEFT)) / (double) (maximalCoord[0] - minimalCoord[0] + 2 * PADDING_LEFT);
+            double x = (this.size[0]) * (double) (rawX - (minimalCoord[0] - PADDING_LEFT)) / (double) (maximalCoord[0] - minimalCoord[0] + PADDING_RIGHT);
             double y = (this.size[1] - HEADER_HEIGHT) * (double) (maximalCoord[1] + PADDING_TOP - rawY) / (double) (maximalCoord[1] - minimalCoord[1] + PADDING_TOP);
             this.cartesianCoordinatesFromVertex.put(v, new int[]{(int) x, (int) y});
         }
@@ -108,6 +111,7 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void paintComponent(Graphics g) {
+        g.clearRect(0,0, this.getWidth(), this.getHeight());
         g.setColor(Color.BLACK);
         for (Vertex v : graph.getAdjacencyList().keySet()) {
 
@@ -121,9 +125,9 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
                 g.setColor(Color.BLACK);
                 Vertex n = edge.getDestination();
 
-                int[] neigbhorCoordinates = cartesianCoordinatesFromVertex.get(n);
-                int neighborX = neigbhorCoordinates[0];
-                int neighborY = neigbhorCoordinates[1];
+                int[] neighborCoordinates = cartesianCoordinatesFromVertex.get(n);
+                int neighborX = neighborCoordinates[0];
+                int neighborY = neighborCoordinates[1];
 
                 g.drawLine(x, y, neighborX, neighborY);
             }
