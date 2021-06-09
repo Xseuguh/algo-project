@@ -111,7 +111,7 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void paintComponent(Graphics g) {
-        g.clearRect(0,0, this.getWidth(), this.getHeight());
+        g.clearRect(0, 0, this.getWidth(), this.getHeight());
         g.setColor(Color.BLACK);
         for (Vertex v : graph.getAdjacencyList().keySet()) {
 
@@ -156,23 +156,25 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
     }
 
     private void drawPath(List<Vertex> path, Color color, Graphics g) {
-        g.setColor(color);
-        for (Vertex v : graph.getAdjacencyList().keySet()) {
-            if (path.contains(v)) {
-                int[] coordinates = cartesianCoordinatesFromVertex.get(v);
-                int x = coordinates[0];
-                int y = coordinates[1];
+        if (path != null) {
+            g.setColor(color);
+            for (Vertex v : graph.getAdjacencyList().keySet()) {
+                if (path.contains(v)) {
+                    int[] coordinates = cartesianCoordinatesFromVertex.get(v);
+                    int x = coordinates[0];
+                    int y = coordinates[1];
 
-                g.fillOval(x - (MARKER_SIZE / 2), y - (MARKER_SIZE / 2), MARKER_SIZE, MARKER_SIZE);
+                    g.fillOval(x - (MARKER_SIZE / 2), y - (MARKER_SIZE / 2), MARKER_SIZE, MARKER_SIZE);
 
-                for (Edge edge : graph.getAdjacencyList().get(v)) {
-                    Vertex n = edge.getDestination();
-                    if (path.contains(n)) {
-                        int[] neigbhorCoordinates = cartesianCoordinatesFromVertex.get(n);
-                        int neighborX = neigbhorCoordinates[0];
-                        int neighborY = neigbhorCoordinates[1];
+                    for (Edge edge : graph.getAdjacencyList().get(v)) {
+                        Vertex n = edge.getDestination();
+                        if (path.contains(n)) {
+                            int[] neigbhorCoordinates = cartesianCoordinatesFromVertex.get(n);
+                            int neighborX = neigbhorCoordinates[0];
+                            int neighborY = neigbhorCoordinates[1];
 
-                        g.drawLine(x, y, neighborX, neighborY);
+                            g.drawLine(x, y, neighborX, neighborY);
+                        }
                     }
                 }
             }
@@ -182,12 +184,20 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
 
     public void setStartStation(Vertex station) {
         this.startStation = station;
-        this.repaint();
+        resetCurrentPathAndMenuSelection();
     }
 
     public void setEndStation(Vertex station) {
         this.endStation = station;
+        resetCurrentPathAndMenuSelection();
+    }
+
+    private void resetCurrentPathAndMenuSelection() {
+        this.path = null;
         this.repaint();
+
+        this.menu.resetShortestPathList();
+        this.menu.enableButtons(this.startStation != null && this.endStation != null);
     }
 
     public void setPath(List<Vertex> path) {
