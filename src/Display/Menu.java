@@ -65,34 +65,49 @@ public class Menu extends JPanel {
 
         this.kShortestPath = new JButton("Calculate the k shortest paths");
         this.kShortestPath.addActionListener(e -> {
-            //TODO Get k shortest paths
-            this.kShortestPathMap = new TreeMap<>();
+            String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for k", "k shortest path", JOptionPane.QUESTION_MESSAGE);
+            if (userInputForK != null) {
+                System.out.println(userInputForK);
+                int k;
+                try {
+                    k = Integer.parseInt(userInputForK);
 
-            //TEMP
-            List<Vertex> path = new ArrayList<>();
-            path.add(data.getVertexFromStationName("Innsbrucker Platz"));
-            path.add(data.getVertexFromStationName("Rathaus Schöneberg"));
-            path.add(data.getVertexFromStationName("Bayerischer Platz"));
-            path.add(data.getVertexFromStationName("Viktoria-Luise-Platz"));
-            path.add(data.getVertexFromStationName("Nollendorfplatz"));
-            this.kShortestPathMap.put("Path 1 : 505m", path);
-            path = new ArrayList<>();
-            path.add(data.getVertexFromStationName("Innsbrucker Platz"));
-            path.add(data.getVertexFromStationName("Rathaus Schöneberg"));
-            path.add(data.getVertexFromStationName("Bayerischer Platz"));
-            path.add(data.getVertexFromStationName("Viktoria-Luise-Platz"));
-            path.add(data.getVertexFromStationName("Nollendorfplatz"));
-            path.add(data.getVertexFromStationName("Bülowstr."));
-            path.add(data.getVertexFromStationName("Gleisdreieck"));
-            this.kShortestPathMap.put("Path 2 : 610m", path);
-            //END TEMP
-            kShortestPathList.addItem(DEFAULT_SELECTED_PATH);
-            for (String key : kShortestPathMap.keySet()) {
-                this.kShortestPathList.addItem(key);
+                    if (k < 1) {
+                        throw new NumberFormatException();
+                    }
+
+                    //TODO Get k shortest paths
+                    this.kShortestPathMap = new TreeMap<>();
+
+                    //TEMP
+                    List<Vertex> path = new ArrayList<>();
+                    path.add(data.getVertexFromStationName("Innsbrucker Platz"));
+                    path.add(data.getVertexFromStationName("Rathaus Schöneberg"));
+                    path.add(data.getVertexFromStationName("Bayerischer Platz"));
+                    path.add(data.getVertexFromStationName("Viktoria-Luise-Platz"));
+                    path.add(data.getVertexFromStationName("Nollendorfplatz"));
+                    this.kShortestPathMap.put("Path 1 : 505m", path);
+                    path = new ArrayList<>();
+                    path.add(data.getVertexFromStationName("Innsbrucker Platz"));
+                    path.add(data.getVertexFromStationName("Rathaus Schöneberg"));
+                    path.add(data.getVertexFromStationName("Bayerischer Platz"));
+                    path.add(data.getVertexFromStationName("Viktoria-Luise-Platz"));
+                    path.add(data.getVertexFromStationName("Nollendorfplatz"));
+                    path.add(data.getVertexFromStationName("Bülowstr."));
+                    path.add(data.getVertexFromStationName("Gleisdreieck"));
+                    this.kShortestPathMap.put("Path 2 : 610m", path);
+                    //END TEMP
+                    kShortestPathList.addItem(DEFAULT_SELECTED_PATH);
+                    for (String key : kShortestPathMap.keySet()) {
+                        this.kShortestPathList.addItem(key);
+                    }
+                    this.kShortestPathList.setVisible(true);
+                    System.out.println("k shortest paths");
+//                    this.kShortestPath.setEnabled(false);
+                } catch (NumberFormatException exception) {
+                    JOptionPane.showMessageDialog(null, "You must enter an integer equal or greater than 1", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
-            this.kShortestPathList.setVisible(true);
-            System.out.println("k shortest paths");
-            this.kShortestPath.setEnabled(false);
         });
         this.kShortestPathList.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -138,7 +153,7 @@ public class Menu extends JPanel {
         this.kShortestPathList.setVisible(false);
     }
 
-    private void setSelectedPathToDefault(){
+    private void setSelectedPathToDefault() {
         this.kShortestPathList.setSelectedItem(DEFAULT_SELECTED_PATH);
     }
 }
