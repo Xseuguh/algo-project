@@ -41,16 +41,8 @@ public class Menu extends JPanel {
         this.bfs.addActionListener(e -> {
             setSelectedPathToDefault();
             System.out.println("bfs");
-            //TODO Get path from bfs algorithm
 
-            //TEMP
-            List<Vertex> path = new ArrayList<>();
-            path.add(data.getVertexFromStationName("Innsbrucker Platz"));
-            path.add(data.getVertexFromStationName("Rathaus Schöneberg"));
-            path.add(data.getVertexFromStationName("Bayerischer Platz"));
-            path.add(data.getVertexFromStationName("Viktoria-Luise-Platz"));
-            path.add(data.getVertexFromStationName("Nollendorfplatz"));
-            //END TEMP
+            List<Vertex> path = drawSubway.getGraph().BFSPath(drawSubway.getStartStation(), drawSubway.getEndStation());
 
             drawSubway.setPath(path);
         });
@@ -59,8 +51,11 @@ public class Menu extends JPanel {
         this.dijkstra.addActionListener(e -> {
             setSelectedPathToDefault();
             System.out.println("dijkstra");
-            //TODO Get path from dijkstra algorithm
-            drawSubway.setPath(new ArrayList<>());
+
+            List<Vertex> path = drawSubway.getGraph().Dijkstra(drawSubway.getStartStation(), drawSubway.getEndStation());
+
+            drawSubway.setPath(path);
+            
         });
 
         this.kShortestPath = new JButton("Calculate the k shortest paths");
@@ -76,7 +71,7 @@ public class Menu extends JPanel {
                         throw new NumberFormatException();
                     }
 
-                    //TODO Get k shortest paths
+                    //TODO: Get k shortest paths
                     this.kShortestPathMap = new TreeMap<>();
 
                     //TEMP
@@ -155,5 +150,13 @@ public class Menu extends JPanel {
 
     private void setSelectedPathToDefault() {
         this.kShortestPathList.setSelectedItem(DEFAULT_SELECTED_PATH);
+    }
+
+    public void debugDisplay(List<Vertex> path) {
+        List<String> pathString = new ArrayList<String>();
+        for (Vertex v : path) {
+            pathString.add(v.getName());
+        }
+        System.out.println(pathString);
     }
 }

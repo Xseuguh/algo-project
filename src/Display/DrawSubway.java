@@ -105,6 +105,10 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
         this.size = newSize;
     }
 
+    public Graph getGraph() {
+        return this.graph;
+    }
+
     public void refresh() {
         this.refreshCoordinates();
         this.repaint();
@@ -133,8 +137,9 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
             }
         }
 
+    Color green = new Color(50,220,26);
         //We display the paths
-        drawPath(this.path, Color.PINK, g);
+        drawPath(this.path, green, g);
 
         //We color the hover station
         colorVertexAndDisplayName(hoverStation, Color.GRAY, g);
@@ -181,10 +186,17 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
         }
     }
 
+    public Vertex getStartStation() {
+        return this.startStation;
+    }
 
     public void setStartStation(Vertex station) {
         this.startStation = station;
         resetCurrentPathAndMenuSelection();
+    }
+
+    public Vertex getEndStation() {
+        return this.endStation;
     }
 
     public void setEndStation(Vertex station) {

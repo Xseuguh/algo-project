@@ -69,4 +69,94 @@ public class Graph {
             }
         }
     }
+
+    public List<Vertex> BFSPath(Vertex src, Vertex dest) {
+        // pred stores predecessor of each vertex
+        // dist stores distance of each vertex from src
+        Map<Vertex, Vertex> pred = new HashMap<>();
+        Map<Vertex, Integer> dist = new HashMap<>();
+ 
+        if (BFS(src, dest, pred, dist) == false) {
+            System.out.println("Given source and destination" + "are not connected");
+            return null;
+        }
+
+        LinkedList<Vertex> path = new LinkedList<Vertex>();
+        Vertex crawl = dest;
+        path.add(crawl);
+        while (pred.containsKey(crawl)) {
+            path.add(pred.get(crawl));
+            crawl = pred.get(crawl);
+        }
+
+        return path;
+    }
+ 
+    public boolean BFS(Vertex src, Vertex dest, Map<Vertex, Vertex> pred, Map<Vertex, Integer> dist) {
+        LinkedList<Vertex> queue = new LinkedList<Vertex>();
+        Map<Vertex, Boolean> visited = new HashMap<>();
+        
+        for (Vertex v : adjacencyList.keySet()) {
+            visited.put(v, false);
+            dist.put(v, Integer.MAX_VALUE);
+            pred.put(v, null);
+        }
+ 
+        visited.put(src, true);
+        dist.put(src, 0);
+        queue.add(src);
+ 
+        // bfs Algorithm
+        while (!queue.isEmpty()) {
+            Vertex u = queue.remove();
+            for (Edge e : adjacencyList.get(u)) {
+                if (!visited.get(e.getDestination())) {
+                    visited.put(e.getDestination(), true);
+                    dist.put(e.getDestination(), dist.get(u) + 1);
+                    pred.put(e.getDestination(), u);
+                    queue.add(e.getDestination());
+ 
+                    if (e.getDestination().getName().equals(dest.getName()))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public List<Vertex> Dijkstra(Vertex source, Vertex dest)
+    {
+        Map<Vertex, Vertex> pred = new HashMap<>();
+        for (Vertex v : adjacencyList.keySet()) {
+            pred.put(v, null);
+            v.setMinDistance(Integer.MAX_VALUE);
+        }
+        source.setMinDistance(0);
+        PriorityQueue<Vertex> vertexQueue = new PriorityQueue<Vertex>();
+        vertexQueue.add(source);
+
+        while (!vertexQueue.isEmpty()) {
+            Vertex u = vertexQueue.poll();
+
+            // Visit each edge exiting u
+            for (Edge e : adjacencyList.get(u))
+            {
+                Vertex v = e.getDestination();
+                int weight = e.getWeight();
+                int distanceThroughU = u.getMinDistance() + weight;
+                if (distanceThroughU < v.getMinDistance()) {
+                    vertexQueue.remove(v);
+                    v.setMinDistance(distanceThroughU);
+                    pred.put(v, u);
+                    vertexQueue.add(v);
+                }
+            }
+        }
+        
+        List<Vertex> path = new ArrayList<Vertex>();
+        for (Vertex vertex = dest; vertex != null; vertex = pred.get(vertex))
+            path.add(vertex);
+        Collections.reverse(path);
+        return path;
+    }
 }
