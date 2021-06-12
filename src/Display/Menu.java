@@ -60,7 +60,14 @@ public class Menu extends JPanel {
             setSelectedPathToDefault();
             System.out.println("dijkstra");
             //TODO Get path from dijkstra algorithm
-            drawSubway.setPath(new ArrayList<>());
+            //TEMP
+            List<Vertex> path = new ArrayList<>();
+            path.add(data.getVertexFromStationName("Möckernbrücke"));
+            path.add(data.getVertexFromStationName("Hallesches Tor"));
+            path.add(data.getVertexFromStationName("Mehringdamm"));
+            path.add(data.getVertexFromStationName("Platz der Luftbrücke"));
+            //END TEMP
+            drawSubway.setPath(path);
         });
 
         this.kShortestPath = new JButton("Calculate the k shortest paths");
