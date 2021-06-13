@@ -16,7 +16,7 @@ public class Menu extends JPanel {
 
     private DrawSubway drawSubway;
 
-    private JButton bfs, dijkstra, kShortestPath, clusters;
+    private JButton bfs, dijkstra, kShortestPath;
 
     private JComboBox<String> kShortestPathList;
     private Map<String, List<Vertex>> kShortestPathMap;
@@ -40,17 +40,21 @@ public class Menu extends JPanel {
         this.bfs = new JButton("Show the shortest path via BFS");
         this.bfs.addActionListener(e -> {
             setSelectedPathToDefault();
+
+            // BFS
             System.out.println("bfs");
 
-            List<Vertex> path = drawSubway.getGraph().BFSPath(drawSubway.getStartStation(), drawSubway.getEndStation());
-            System.out.println(drawSubway.getGraph().getAdjacencyList().size());
+            BFS bfs = new BFS(drawSubway.getGraph().getAdjacencyList());
+            List<Vertex> path = bfs.BFSPath(drawSubway.getStartStation(), drawSubway.getEndStation());
 
             drawSubway.setPath(path);
 
+            // Clustering
             System.out.println("clusters");
-            drawSubway.getGraph().graphClustering(4);
+            Clustering clustering = new Clustering(drawSubway.getGraph());
+            drawSubway.getGraph().setAdjacencyList(clustering.graphClustering(5));
 
-            System.out.println("Number of clusters: " + drawSubway.getGraph().clusterAmount(drawSubway.getGraph().getSubAdjacencyList()));
+            System.out.println("Number of clusters: " + clustering.clusterAmount(drawSubway.getGraph().getAdjacencyList()));
         });
 
         this.dijkstra = new JButton("Show the shortest path via Dijkstra");
@@ -58,7 +62,8 @@ public class Menu extends JPanel {
             setSelectedPathToDefault();
             System.out.println("dijkstra");
 
-            List<Vertex> path = drawSubway.getGraph().Dijkstra(drawSubway.getStartStation(), drawSubway.getEndStation());
+            Dijkstra dijkstra = new Dijkstra(drawSubway.getGraph().getAdjacencyList());
+            List<Vertex> path = dijkstra.DijkstraPath(drawSubway.getStartStation(), drawSubway.getEndStation());
 
             drawSubway.setPath(path);
             
