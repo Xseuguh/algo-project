@@ -4,25 +4,25 @@ import java.util.*;
 
 public class Clustering {
     private Map<List<Vertex>,List<Edge>> shortestPaths;
-    private List<List<Edge>> graphEdges;
-    private Map<List<Edge>,Double> edgeBetweennessMap;
     private Combination combination;
-    
+
+    private Map<List<Edge>,Double> edgeBetweennessMap;
     private Map<Vertex, Set<Edge>> adjacencyList;
+    private List<List<Edge>> graphEdges;
 
     public Clustering(Graph g) {
         this.adjacencyList = g.getAdjacencyList();
         this.graphEdges = g.getGraphEdges();
         this.combination = new Combination(this.adjacencyList);
-        setShortestPaths();
-        setEdgeBetweennessMap();
+        this.shortestPaths = setShortestPaths();
+        this.edgeBetweennessMap = setEdgeBetweennessMap();
     }
 
     public Map<Vertex, Set<Edge>> getAdjacencyList() {
         return this.adjacencyList;
     }
 
-    public void removeEdge(List<Edge> edges) {
+    private void removeEdge(List<Edge> edges) {
         for(Edge e : edges) {
             Vertex source = e.getSource();
             Vertex destination = e.getDestination();
@@ -31,7 +31,7 @@ public class Clustering {
         }
     }
 
-    public List<Edge> getEdgeCentrality(Map<List<Edge>,Double> edgeBetweennessMap) {
+    private List<Edge> getEdgeCentrality(Map<List<Edge>,Double> edgeBetweennessMap) {
         List<Edge> maxEdge = graphEdges.get(0);
         for (List<Edge> e : edgeBetweennessMap.keySet()) {
             if (edgeBetweennessMap.get(e) >= edgeBetweennessMap.get(maxEdge)) {
@@ -99,7 +99,6 @@ public class Clustering {
                         queue.add(v);
                         break;
                     }
-                    
                 }
                 clusterCount++;
             }
@@ -113,7 +112,7 @@ public class Clustering {
     //     return adjacencyList.get(u).contains(edgeToV);
     // }
 
-    public void setShortestPaths() {
+    public Map<List<Vertex>,List<Edge>> setShortestPaths() {
         Map<List<Vertex>,List<Edge>> shortestPathsTemp = new HashMap<List<Vertex>,List<Edge>>();
         List<List<Vertex>> verticesCombinations = combination.getNodePairs();
         Dijkstra dijkstra = new Dijkstra(this.adjacencyList);
@@ -121,33 +120,26 @@ public class Clustering {
         for (List<Vertex> vertexList : verticesCombinations) {
             shortestPathsTemp.put(vertexList, vertexPathToEdgePath(dijkstra.DijkstraPath(vertexList.get(0), vertexList.get(1))));
         }
-        this.shortestPaths = shortestPathsTemp;
+        return shortestPathsTemp;
     }
 
-    public void setEdgeBetweennessMap() {
-        
-        // for (List<Vertex> verticesList : this.shortestPaths.keySet()) {
-        //     if (hasEdge(verticesList.get(0), verticesList.get(1))) {
-        //         this.graphEdges.add(new Edge(verticesList.get(0), verticesList.get(1)));
-        //     }
-        // }
-
-        this.edgeBetweennessMap = new HashMap<List<Edge>,Double>();
+    public Map<List<Edge>,Double> setEdgeBetweennessMap() {
+        Map<List<Edge>,Double> edgeBetweennessMapTemp = new HashMap<List<Edge>,Double>();
         for (List<Edge> listEdge : this.graphEdges) {
-            this.edgeBetweennessMap.put(listEdge, 0.);
+            edgeBetweennessMapTemp.put(listEdge, 0.);
         }
 
         for (List<Edge> listEdge : this.graphEdges) {
             for (List<Vertex> vertexPair : this.shortestPaths.keySet()) {
                 for (Edge e : listEdge) {
                     if(this.shortestPaths.get(vertexPair).contains(e)) {
-                        this.edgeBetweennessMap.put(listEdge, this.edgeBetweennessMap.get(listEdge) + 1);
+                        edgeBetweennessMapTemp.put(listEdge, edgeBetweennessMapTemp.get(listEdge) + 1);
                         break;
                     }
                 }
-                
             }
         }
+        return edgeBetweennessMapTemp;
     }
 
     public List<Edge> vertexPathToEdgePath(List<Vertex> path) {

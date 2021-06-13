@@ -16,6 +16,25 @@ public class Combination {
         this.verticesIDMap = graphVertexIDs();
     }
 
+    public void helper(List<int[]> combinationsT, int data[], int start, int end, int index) {
+        if (index == data.length) {
+            int[] combination = data.clone();
+            combinationsT.add(combination);
+        } else {
+            int max = Math.min(end, end + 1 - data.length + index);
+            for (int i = start; i <= max; i++) {
+                data[index] = i;
+                helper(combinationsT, data, i + 1, end, index + 1);
+            }
+        }
+    }
+    
+    public List<int[]> generate(int n, int k) {
+        List<int[]> combinationsTemp = new ArrayList<>();
+        helper(combinationsTemp, new int[k], 0, n - 1, 0);
+        return combinationsTemp; // Renvoie k parmi n
+    }
+
     public List<List<Vertex>> getNodePairs() {
         this.combinations = generate(adjacencyList.size(), 2);
         List<List<Vertex>> verticesCombinationsTemp = new ArrayList<List<Vertex>>();
@@ -29,26 +48,9 @@ public class Combination {
         }
         return verticesCombinationsTemp;
     }
-
-    public void helper(List<int[]> combinationsT, int data[], int start, int end, int index) {
-        if (index == data.length) {
-            int[] combination = data.clone();
-            combinationsT.add(combination);
-        } else {
-            int max = Math.min(end, end + 1 - data.length + index);
-            for (int i = start; i <= max; i++) {
-                data[index] = i;
-                helper(combinationsT, data, i + 1, end, index + 1);
-            }
-        }
-    }
-
-    public List<int[]> generate(int n, int r) {
-        List<int[]> combinationsTemp = new ArrayList<>();
-        helper(combinationsTemp, new int[r], 0, n - 1, 0);
-        return combinationsTemp;
-    }
     
+    // BULLSHIT
+
     public Map<Integer,Vertex> graphVertexIDs() {
         Map<Integer,Vertex> res = new HashMap<Integer,Vertex>();
         int i = 0;
