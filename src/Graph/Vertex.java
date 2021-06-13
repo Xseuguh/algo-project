@@ -39,5 +39,7 @@ public class Vertex implements Comparable<Vertex>{
 
     public int compareTo(Vertex vertex) {
         return Integer.compare(minDistance, vertex.minDistance);
-}
+    }
+
+
 }

@@ -16,7 +16,7 @@ public class Menu extends JPanel {
 
     private DrawSubway drawSubway;
 
-    private JButton bfs, dijkstra, kShortestPath;
+    private JButton bfs, dijkstra, kShortestPath, clusters;
 
     private JComboBox<String> kShortestPathList;
     private Map<String, List<Vertex>> kShortestPathMap;
@@ -43,8 +43,14 @@ public class Menu extends JPanel {
             System.out.println("bfs");
 
             List<Vertex> path = drawSubway.getGraph().BFSPath(drawSubway.getStartStation(), drawSubway.getEndStation());
+            System.out.println(drawSubway.getGraph().getAdjacencyList().size());
 
             drawSubway.setPath(path);
+
+            System.out.println("clusters");
+            drawSubway.getGraph().graphClustering(4);
+
+            System.out.println("Number of clusters: " + drawSubway.getGraph().clusterAmount(drawSubway.getGraph().getSubAdjacencyList()));
         });
 
         this.dijkstra = new JButton("Show the shortest path via Dijkstra");
@@ -110,7 +116,6 @@ public class Menu extends JPanel {
                 this.drawSubway.setPath(this.kShortestPathMap.get(path));
             }
         });
-
 
         layout = new GridLayout(2, 3);
 
