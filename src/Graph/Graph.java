@@ -8,13 +8,13 @@ public class Graph {
 
     private int numberOfVertices;
     private Map<Vertex, Set<Edge>> adjacencyList;
-    private List<List<Edge>> graphEdges;
+    private Set<Set<Edge>> graphEdges;
 
     private static final Comparator<Edge> EDGE_COMPARATOR = Comparator.comparing(e -> e.getDestination().getId());
 
     public Graph(List<Vertex> vertices) {
         this.numberOfVertices = vertices.size();
-        this.graphEdges = new ArrayList<List<Edge>>();
+        this.graphEdges = new TreeSet<Set<Edge>>();
         adjacencyList = new HashMap<>();
         fillAdjacencyListWithEmptyList(vertices);
     }
@@ -54,7 +54,7 @@ public class Graph {
         return numberOfVertices;
     }
 
-    public List<List<Edge>> getGraphEdges() {
+    public Set<Set<Edge>> getGraphEdges() {
         return this.graphEdges;
     }
 
@@ -68,7 +68,26 @@ public class Graph {
         Edge edgeFromDestinationToSource = new Edge(weight, destination, source);
         this.adjacencyList.get(destination).add(edgeFromDestinationToSource);
 
-        this.graphEdges.add(List.of(edgeFromSourceToDestination,edgeFromDestinationToSource));
+
+        //this.graphEdges.add(List.of(edgeFromSourceToDestination,edgeFromDestinationToSource));
+    }
+
+    public void setGraphEdges() {
+        Set<Set<Edge>> graphEdgesTemp = new HashSet<Set<Edge>>();
+        for (Vertex v : adjacencyList.keySet()) {
+            for (Edge e : adjacencyList.get(v)) {
+                Set<Edge> pair = new HashSet<Edge>();
+                pair.add(e);
+                for (Edge edge : adjacencyList.get(e.getDestination())) {
+                    if (edge.getDestination().equals(e.getSource())){
+                        pair.add(edge);
+                        break;
+                    }
+                }
+                graphEdgesTemp.add(pair);                    
+            }
+        }
+        this.graphEdges = graphEdgesTemp;
     }
 
     public void displayAdjacencyList() {

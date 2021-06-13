@@ -26,6 +26,7 @@ public class Main {
                 Vertex destinationVertex = data.getVertexFromStationName(stations.get(i + 1));
 
                 graph.addEdge(sourceVertex, destinationVertex);
+                graph.setGraphEdges();
             }
         }
         //End of graph initialization
