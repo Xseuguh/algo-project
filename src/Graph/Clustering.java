@@ -31,30 +31,10 @@ public class Clustering {
         }
     }
 
-    public Set<Edge> getEdgePair() {
-        Set<Edge> edgePair = new HashSet<Edge>();
-        for (Vertex v : adjacencyList.keySet()) {
-            for (Edge e : adjacencyList.get(v)) {
-                Set<Edge> pair = new HashSet<Edge>();
-                pair.add(e);
-                for (Edge edge : adjacencyList.get(e.getDestination())) {
-                    if (edge.getDestination().equals(e.getSource())){
-                        pair.add(edge);
-                        break;
-                    }
-                }
-                edgePair = pair;
-                break;                    
-            }
-            break;
-        }
-        return edgePair;
-    }
-
     private Set<Edge> getEdgeCentrality(Map<Set<Edge>,Double> edgeBetweennessMap) {
-        Set<Edge> maxEdge = getEdgePair();
+        Set<Edge> maxEdge = null;
         for (Set<Edge> e : edgeBetweennessMap.keySet()) {
-            if (edgeBetweennessMap.get(e) >= edgeBetweennessMap.get(maxEdge)) {
+            if(edgeBetweennessMap.get(e) >= edgeBetweennessMap.getOrDefault(maxEdge, -1.)) {
                 maxEdge = e;
             }
         }
@@ -127,10 +107,58 @@ public class Clustering {
         return clusterCount;
     }
     
-    // public boolean hasEdge(Vertex u, Vertex v) {
-    //     Edge edgeToV = new Edge(weightBetweenVertices(u, v), v);
-    //     return adjacencyList.get(u).contains(edgeToV);
-    // }
+    public Map<Vertex, Integer> vertexByCluster(Map<Vertex, Set<Edge>> adjacencyList) {
+        Vertex s = combination.getVerticesIDMap().get(0);
+        int clusterCount = 1;
+
+        Map<Vertex, Integer> explored = new HashMap<>();
+        for (Vertex v : adjacencyList.keySet()) {
+            explored.put(v, 0);
+        }
+
+        LinkedList<Vertex> queue = new LinkedList<Vertex>();
+        explored.put(s, 1);
+        queue.add(s);
+
+        int remainingVertex = 0;
+        boolean stop = true;
+
+        while (stop){
+            // BFS
+            while (!queue.isEmpty()) {
+                Vertex u = queue.remove();
+                explored.put(u, clusterCount);
+                for (Edge e : adjacencyList.get(u)) {
+                    if (explored.get(e.getDestination()) == 0) {
+                        explored.put(e.getDestination(), clusterCount);
+                        queue.add(e.getDestination());
+                    }
+                }
+            }
+            // END BFS
+
+            remainingVertex = 0;
+            for (Vertex v : explored.keySet()) {
+                if (explored.get(v) == 0) {
+                    remainingVertex++;
+                }
+            }
+
+            if (remainingVertex == 0) {
+                stop = false;
+            } else {
+                for (Vertex v : explored.keySet()) {
+                    if (explored.get(v) == 0) {
+                        queue.add(v);
+                        break;
+                    }
+                }
+                clusterCount++;
+            }
+        }
+
+        return explored;
+    }
 
     public Map<List<Vertex>,List<Edge>> setShortestPaths() {
         Map<List<Vertex>,List<Edge>> shortestPathsTemp = new HashMap<List<Vertex>,List<Edge>>();

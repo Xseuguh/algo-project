@@ -53,7 +53,7 @@ public class Menu extends JPanel {
             System.out.println("clusters");
             
             Clustering clustering = new Clustering(drawSubway.getGraph());
-            drawSubway.getGraph().setAdjacencyList(clustering.graphClustering(5));
+            drawSubway.getGraph().setAdjacencyList(clustering.graphClustering(10));
 
             System.out.println("Number of clusters: " + clustering.clusterAmount(drawSubway.getGraph().getAdjacencyList()));
         });
