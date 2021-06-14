@@ -8,11 +8,13 @@ public class Graph {
 
     private int numberOfVertices;
     private Map<Vertex, Set<Edge>> adjacencyList;
+    private Set<Set<Edge>> graphEdges;
 
     private static final Comparator<Edge> EDGE_COMPARATOR = Comparator.comparing(e -> e.getDestination().getId());
 
     public Graph(List<Vertex> vertices) {
         this.numberOfVertices = vertices.size();
+        this.graphEdges = new TreeSet<Set<Edge>>();
         adjacencyList = new HashMap<>();
         fillAdjacencyListWithEmptyList(vertices);
     }
@@ -41,22 +43,48 @@ public class Graph {
     }
 
     public Map<Vertex, Set<Edge>> getAdjacencyList() {
-        return adjacencyList;
+        return this.adjacencyList;
     }
+
 
     public int getNumberOfVertices() {
         return numberOfVertices;
     }
 
+    public Set<Set<Edge>> getGraphEdges() {
+        return this.graphEdges;
+    }
+
     public void addEdge(Vertex source, Vertex destination) {
         int weight = weightBetweenVertices(source, destination);
 
-        Edge edgeFromSourceToDestination = new Edge(weight, destination);
+        Edge edgeFromSourceToDestination = new Edge(weight, source, destination);
         this.adjacencyList.get(source).add(edgeFromSourceToDestination);
 
         //As our graph is undirected, we can add the reversed edge
-        Edge edgeFromDestinationToSource = new Edge(weight, source);
+        Edge edgeFromDestinationToSource = new Edge(weight, destination, source);
         this.adjacencyList.get(destination).add(edgeFromDestinationToSource);
+
+
+        //this.graphEdges.add(List.of(edgeFromSourceToDestination,edgeFromDestinationToSource));
+    }
+
+    public void setGraphEdges() {
+        Set<Set<Edge>> graphEdgesTemp = new HashSet<Set<Edge>>();
+        for (Vertex v : adjacencyList.keySet()) {
+            for (Edge e : adjacencyList.get(v)) {
+                Set<Edge> pair = new HashSet<Edge>();
+                pair.add(e);
+                for (Edge edge : adjacencyList.get(e.getDestination())) {
+                    if (edge.getDestination().equals(e.getSource())){
+                        pair.add(edge);
+                        break;
+                    }
+                }
+                graphEdgesTemp.add(pair);
+            }
+        }
+        this.graphEdges = graphEdgesTemp;
     }
 
     public void displayAdjacencyList() {

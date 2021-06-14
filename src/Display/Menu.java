@@ -16,7 +16,7 @@ public class Menu extends JPanel {
 
     private DrawSubway drawSubway;
 
-    private JButton bfs, dijkstra, kShortestPath;
+    private JButton bfs, dijkstra, clustering, kShortestPath;
 
     private JComboBox<String> kShortestPathList;
     private Map<String, List<Vertex>> kShortestPathMap;
@@ -25,7 +25,7 @@ public class Menu extends JPanel {
     private static final String DEFAULT_END_STATION = "--Select the ending station";
     private static final String DEFAULT_SELECTED_PATH = "--Select the path to display";
 
-    public Menu(Data data, DrawSubway drawSubway) {
+    public Menu(Data data, Graph g, DrawSubway drawSubway) {
         super();
         this.drawSubway = drawSubway;
 
@@ -39,42 +39,64 @@ public class Menu extends JPanel {
 
         this.bfs = new JButton("Show the shortest path via BFS");
         this.bfs.addActionListener(e -> {
+            this.drawSubway.setClusteringInfo(null,null);
             setSelectedPathToDefault();
             System.out.println("bfs");
-            //TODO Get path from bfs algorithm
 
-            //TEMP
-            List<Vertex> path = new ArrayList<>();
-            path.add(data.getVertexFromStationName("Innsbrucker Platz"));
-            path.add(data.getVertexFromStationName("Rathaus Schöneberg"));
-            path.add(data.getVertexFromStationName("Bayerischer Platz"));
-            path.add(data.getVertexFromStationName("Viktoria-Luise-Platz"));
-            path.add(data.getVertexFromStationName("Nollendorfplatz"));
-            //END TEMP
-
+            BFS bfs = new BFS(g.getAdjacencyList());
+            List<Vertex> path = bfs.BFSPath(drawSubway.getStartStation(), drawSubway.getEndStation());
+            System.out.println(path);
             drawSubway.setPath(path);
         });
 
         this.dijkstra = new JButton("Show the shortest path via Dijkstra");
         this.dijkstra.addActionListener(e -> {
+            this.drawSubway.setClusteringInfo(null,null);
             setSelectedPathToDefault();
             System.out.println("dijkstra");
-            //TODO Get path from dijkstra algorithm
-            //TEMP
-            List<Vertex> path = new ArrayList<>();
-            path.add(data.getVertexFromStationName("Möckernbrücke"));
-            path.add(data.getVertexFromStationName("Hallesches Tor"));
-            path.add(data.getVertexFromStationName("Mehringdamm"));
-            path.add(data.getVertexFromStationName("Platz der Luftbrücke"));
-            //END TEMP
+
+            Dijkstra dijkstra = new Dijkstra(g.getAdjacencyList());
+            List<Vertex> path = dijkstra.DijkstraPath(drawSubway.getStartStation(), drawSubway.getEndStation());
+
             drawSubway.setPath(path);
+
+        });
+
+        this.clustering = new JButton("Graph clustering");
+        this.clustering.addActionListener(e -> {
+            String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for k", "k shortest path", JOptionPane.QUESTION_MESSAGE);
+            if (userInputForK != null) {
+                int k;
+                try {
+                    k = Integer.parseInt(userInputForK);
+                    resetStationSelection();
+
+                    if (k < 1) {
+                        throw new NumberFormatException();
+                    }
+
+                    setSelectedPathToDefault();
+                    System.out.println("graph clustering");
+
+                    // Clustering
+                    System.out.println("clusters");
+
+                    Clustering clustering = new Clustering(g);
+                    List<Set<Edge>> edgesToRemove = clustering.graphClustering(k);
+                    Map<Integer, Set<Vertex>> vertexSortedByCluster = clustering.vertexByCluster();
+                    drawSubway.setClusteringInfo(edgesToRemove, vertexSortedByCluster);
+
+                } catch (NumberFormatException exception) {
+                    JOptionPane.showMessageDialog(null, "You must enter an integer equal or greater than 1, and  equal or smaller than " + g.getNumberOfVertices(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
 
         this.kShortestPath = new JButton("Calculate the k shortest paths");
         this.kShortestPath.addActionListener(e -> {
+            this.drawSubway.setClusteringInfo(null,null);
             String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for k", "k shortest path", JOptionPane.QUESTION_MESSAGE);
             if (userInputForK != null) {
-                System.out.println(userInputForK);
                 int k;
                 try {
                     k = Integer.parseInt(userInputForK);
@@ -83,7 +105,7 @@ public class Menu extends JPanel {
                         throw new NumberFormatException();
                     }
 
-                    //TODO Get k shortest paths
+                    //TODO: Get k shortest paths
                     this.kShortestPathMap = new TreeMap<>();
 
                     //TEMP
@@ -123,14 +145,14 @@ public class Menu extends JPanel {
             }
         });
 
-
-        layout = new GridLayout(2, 3);
+        layout = new GridLayout(2, 4);
 
         this.setLayout(layout);
 
         this.add(this.startingStationName);
         this.add(this.bfs);
         this.add(this.dijkstra);
+        this.add(this.clustering);
         this.add(this.endingStationName);
         this.add(this.kShortestPath);
         this.add(this.kShortestPathList);
@@ -160,7 +182,20 @@ public class Menu extends JPanel {
         this.kShortestPathList.setVisible(false);
     }
 
+    public void resetStationSelection(){
+        this.startingStationName.setSelectedItem(DEFAULT_START_STATION);
+        this.endingStationName.setSelectedItem(DEFAULT_END_STATION);
+    }
+
     private void setSelectedPathToDefault() {
         this.kShortestPathList.setSelectedItem(DEFAULT_SELECTED_PATH);
+    }
+
+    public void debugDisplay(List<Vertex> path) {
+        List<String> pathString = new ArrayList<String>();
+        for (Vertex v : path) {
+            pathString.add(v.getName());
+        }
+        System.out.println(pathString);
     }
 }
