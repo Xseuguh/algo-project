@@ -139,7 +139,7 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
 
     Color green = new Color(50,220,26);
         //We display the paths
-        drawPath(this.path, green, g);
+        drawPath(green, g);
 
         //We color the hover station
         colorVertexAndDisplayName(hoverStation, Color.GRAY, g);
@@ -160,27 +160,25 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
         }
     }
 
-    private void drawPath(List<Vertex> path, Color color, Graphics g) {
-        if (path != null) {
+    private void drawPath(Color color, Graphics g) {
+        if (this.path != null) {
             g.setColor(color);
-            for (Vertex v : graph.getAdjacencyList().keySet()) {
-                if (path.contains(v)) {
-                    int[] coordinates = cartesianCoordinatesFromVertex.get(v);
-                    int x = coordinates[0];
-                    int y = coordinates[1];
+            for (int i = 0; i < this.path.size(); i++) {
+                Vertex currentStation = this.path.get(i);
+                int[] coordinates = cartesianCoordinatesFromVertex.get(currentStation);
+                int x = coordinates[0];
+                int y = coordinates[1];
 
-                    g.fillOval(x - (MARKER_SIZE / 2), y - (MARKER_SIZE / 2), MARKER_SIZE, MARKER_SIZE);
+                g.fillOval(x - (MARKER_SIZE / 2), y - (MARKER_SIZE / 2), MARKER_SIZE, MARKER_SIZE);
 
-                    for (Edge edge : graph.getAdjacencyList().get(v)) {
-                        Vertex n = edge.getDestination();
-                        if (path.contains(n)) {
-                            int[] neigbhorCoordinates = cartesianCoordinatesFromVertex.get(n);
-                            int neighborX = neigbhorCoordinates[0];
-                            int neighborY = neigbhorCoordinates[1];
 
-                            g.drawLine(x, y, neighborX, neighborY);
-                        }
-                    }
+                if((i + 1) < this.path.size()){
+                    Vertex nexStation = this.path.get(i + 1);
+                    int[] nexStationCoordinates = cartesianCoordinatesFromVertex.get(nexStation);
+                    int nextStationX = nexStationCoordinates[0];
+                    int nextStationY = nexStationCoordinates[1];
+
+                    g.drawLine(x, y, nextStationX, nextStationY);
                 }
             }
         }
