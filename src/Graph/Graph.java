@@ -46,9 +46,6 @@ public class Graph {
         return this.adjacencyList;
     }
 
-    public void setAdjacencyList(Map<Vertex, Set<Edge>> adjacencyList) {
-        this.adjacencyList = adjacencyList;
-    }
 
     public int getNumberOfVertices() {
         return numberOfVertices;
@@ -84,7 +81,7 @@ public class Graph {
                         break;
                     }
                 }
-                graphEdgesTemp.add(pair);                    
+                graphEdgesTemp.add(pair);
             }
         }
         this.graphEdges = graphEdgesTemp;

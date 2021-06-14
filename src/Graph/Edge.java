@@ -19,7 +19,7 @@ public class Edge {
         return this.destination;
     }
 
-    public Vertex getSource()  {
+    public Vertex getSource() {
         return this.source;
     }
 

@@ -20,10 +20,10 @@ public class BFS {
             return null;
         }
 
-        LinkedList<Vertex> path = new LinkedList<Vertex>();
+        LinkedList<Vertex> path = new LinkedList<>();
         Vertex crawl = dest;
         path.add(crawl);
-        while (pred.containsKey(crawl)) {
+        while (!crawl.equals(src)) {
             path.add(pred.get(crawl));
             crawl = pred.get(crawl);
         }
@@ -32,7 +32,7 @@ public class BFS {
     }
  
     public boolean BFSCheck(Vertex src, Vertex dest, Map<Vertex, Vertex> pred, Map<Vertex, Integer> dist) {
-        LinkedList<Vertex> queue = new LinkedList<Vertex>();
+        LinkedList<Vertex> queue = new LinkedList<>();
         Map<Vertex, Boolean> visited = new HashMap<>();
         
         for (Vertex v : adjacencyList.keySet()) {

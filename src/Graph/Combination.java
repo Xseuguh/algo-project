@@ -52,7 +52,7 @@ public class Combination {
     // BULLSHIT
 
     public Map<Integer,Vertex> graphVertexIDs() {
-        Map<Integer,Vertex> res = new HashMap<Integer,Vertex>();
+        Map<Integer,Vertex> res = new HashMap<>();
         int i = 0;
         for (Vertex v : adjacencyList.keySet()) {
             res.put(i,v);
