@@ -5,91 +5,79 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
+import Graph.Dijkstra;
 import Graph.Edge;
 import Graph.Graph;
 import Graph.Vertex;
 
 public class KShortestPaths {
     private Graph graph;
-    private Vertex source;
     private Vertex sink;
+    private Vertex source;
     private int K;
-
-    public KShortestPaths() {
-    }
 
     public KShortestPaths(Graph graph, Vertex source, Vertex sink, int K) {
         this.graph = graph;
-        this.source = source;
         this.sink = sink;
+        this.source = source;
         this.K = K;
-    }
+    };
 
-    public Graph getGraph() {
-        return this.graph;
-    }
+    public List<Path> getKShortestPaths() {
+        List<Path> shortestPaths = new ArrayList<>();
+        List<Path> possiblePaths = new ArrayList<>();
+        Dijkstra dijkstra = new Dijkstra(this.cloneGraph().getAdjacencyList());
 
-    public void setGraph(Graph graph) {
-        this.graph = graph;
-    }
+        shortestPaths.add(dijkstra.DijkstraPathWithDist(source, sink));
 
-    public Vertex getSource() {
-        return this.source;
-    }
+        for (int k = 1; k < this.K; k++) {
+            Path lastPath = shortestPaths.get(k - 1);
+            for (int i = 0; i < lastPath.size() - 2; i++) {
+                Graph clonedGraph = this.cloneGraph();
 
-    public void setSource(Vertex source) {
-        this.source = source;
-    }
+                Vertex junctionNode = lastPath.getNode(i);
+                Path lastPathRoot = lastPath.getSubPath(0, i + 1);
 
-    public Vertex getSink() {
-        return this.sink;
-    }
+                for (Path path : shortestPaths) {
+                    if (lastPathRoot.equals(path.getSubPath(0, i + 1)))
+                        clonedGraph.removeEdge(path.getNode(i), path.getNode(i + 1));
+                }
 
-    public void setSink(Vertex sink) {
-        this.sink = sink;
-    }
+                for (int j = 0; j < lastPathRoot.size() - 1; j++) {
+                    clonedGraph.removeVertex(lastPathRoot.getNode(j));
+                }
 
-    public List<List<Edge>> getKShortestPaths() {
-        // Initialization
+                dijkstra = new Dijkstra(clonedGraph.getAdjacencyList());
+                Path nextPath = dijkstra.DijkstraPathWithDist(junctionNode, sink);
 
-        List<Edge> orderedCapacities = new ArrayList<>();
-        List<Optional<Path>> shortestPath = new ArrayList<>();
+                Path newPath = lastPathRoot.concat(nextPath);
+                if (!possiblePaths.contains(newPath) && newPath.getLastVertex() == sink)
+                    possiblePaths.add(newPath);
 
-        Map<Vertex, Set<Edge>> adjList = this.graph.getAdjacencyList();
-
-        for (Vertex vertex : adjList.keySet()) {
-            adjList.get(vertex).forEach(edge -> orderedCapacities.add(edge));
-        }
-
-        // Order are capacities : c1, ..., cr
-        orderedCapacities.sort(Comparator.comparing(Edge::getWeight));
-
-        // A<-A'
-        Map<Vertex, Set<Edge>> subAdjList = new HashMap<>(adjList);
-
-        for (int l = 0; l < orderedCapacities.size(); l++) {
-            int capacity = orderedCapacities.get(l).getWeight();
-
-            // A' <- {(i, j) in A'| cij >= cl}
-            for (Vertex vertex : subAdjList.keySet()) {
-                Set<Edge> edges = adjList.get(vertex);
-                edges.forEach(edge -> {
-                    if (edge.getWeight() < capacity) {
-                        edges.remove(edge);
-                    }
-                });
             }
+            if (possiblePaths.isEmpty())
+                break;
 
-            // L[l] <- the o-d shortest loopless path in D' = (V,A'), null otherwise
-            UCS ucs = new UCS(subAdjList, source, sink);
-            shortestPath.add(ucs.getShortestPath());
+            possiblePaths.sort(Comparator.comparing(path -> path.getDistance(this.graph)));
+            shortestPaths.add(possiblePaths.remove(0));
         }
 
-        // Find K-Quickest Paths
-
-        return new ArrayList<>();
+        return shortestPaths;
     }
+
+    public Graph cloneGraph() {
+        List<Vertex> vertices = new ArrayList(this.graph.getAdjacencyList().keySet());
+        Graph newGraph = new Graph(vertices);
+
+        vertices.forEach(vertex -> {
+            vertex.setMinDistance(Integer.MAX_VALUE);
+            Set<Edge> edges = this.graph.getAdjacencyList().get(vertex);
+            newGraph.getAdjacencyList().get(vertex).addAll(edges);
+        });
+
+        return newGraph;
+    }
+
 }

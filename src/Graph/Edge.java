@@ -26,4 +26,10 @@ public class Edge {
     public void setSource(Vertex source) {
         this.source = source;
     }
+
+    @Override
+    public String toString() {
+        return "{" + ", source='" + getSource() + "'" + ", destination='" + getDestination() + "'" + ", weight='"
+                + getWeight() + "'" + "}";
+    }
 }

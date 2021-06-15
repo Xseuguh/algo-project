@@ -3,7 +3,7 @@ package Graph;
 import java.util.*;
 
 public class Graph {
-    //Factor to convert in meter:  1 nautical mile * 60 (to pass in degree)
+    // Factor to convert in meter: 1 nautical mile * 60 (to pass in degree)
     private static final double CONST_CONVERTING_FACTOR = 1852 * 60;
 
     private int numberOfVertices;
@@ -19,6 +19,37 @@ public class Graph {
         fillAdjacencyListWithEmptyList(vertices);
     }
 
+    public Graph(Map<Vertex, Set<Edge>> adjacencyList) {
+        this.adjacencyList = adjacencyList;
+    }
+
+    public Optional<Edge> findEdge(Vertex source, Vertex destination) {
+        return adjacencyList.get(source).stream().filter(edge -> edge.getDestination() == destination).findFirst();
+    }
+
+    public void removeEdge(Vertex source, Vertex destination) {
+        Set<Edge> edges = this.adjacencyList.get(source);
+
+        Optional<Edge> edge = findEdge(source, destination);
+        if (edge.isPresent())
+            edges.remove(edge.get());
+    }
+
+    public void removeVertex(Vertex removedVertex) {
+        Map<Set<Edge>, Edge> deletedEdges = new HashMap<>();
+        this.adjacencyList.remove(removedVertex);
+        this.adjacencyList.forEach((vertex, edges) -> {
+            edges.forEach(edge -> {
+                if (edge.getDestination() == removedVertex)
+                    deletedEdges.put(edges, edge);
+            });
+        });
+
+        for (Set<Edge> edges : deletedEdges.keySet()) {
+            edges.remove(deletedEdges.get(edges));
+        }
+    }
+
     private void fillAdjacencyListWithEmptyList(List<Vertex> vertices) {
         for (Vertex vertex : vertices) {
             adjacencyList.put(vertex, new TreeSet<>(EDGE_COMPARATOR));
@@ -32,8 +63,7 @@ public class Graph {
         double dLatDeg = destination.getLatitude();
         double dLongDeg = destination.getLongitude();
 
-
-        //Approximation by Pythagore
+        // Approximation by Pythagore
         double x = (sLongDeg - dLongDeg) * Math.cos(Math.toRadians((sLatDeg + dLatDeg) / 2));
         double y = sLatDeg - dLatDeg;
 
@@ -46,7 +76,6 @@ public class Graph {
         return this.adjacencyList;
     }
 
-
     public int getNumberOfVertices() {
         return numberOfVertices;
     }
@@ -58,15 +87,18 @@ public class Graph {
     public void addEdge(Vertex source, Vertex destination) {
         int weight = weightBetweenVertices(source, destination);
 
+        addEdgeWithWeight(source, destination, weight);
+    }
+
+    public void addEdgeWithWeight(Vertex source, Vertex destination, int weight) {
         Edge edgeFromSourceToDestination = new Edge(weight, source, destination);
         this.adjacencyList.get(source).add(edgeFromSourceToDestination);
 
-        //As our graph is undirected, we can add the reversed edge
+        // As our graph is undirected, we can add the reversed edge
         Edge edgeFromDestinationToSource = new Edge(weight, destination, source);
         this.adjacencyList.get(destination).add(edgeFromDestinationToSource);
 
-
-        //this.graphEdges.add(List.of(edgeFromSourceToDestination,edgeFromDestinationToSource));
+        // this.graphEdges.add(List.of(edgeFromSourceToDestination,edgeFromDestinationToSource));
     }
 
     public void setGraphEdges() {
@@ -76,7 +108,7 @@ public class Graph {
                 Set<Edge> pair = new HashSet<Edge>();
                 pair.add(e);
                 for (Edge edge : adjacencyList.get(e.getDestination())) {
-                    if (edge.getDestination().equals(e.getSource())){
+                    if (edge.getDestination().equals(e.getSource())) {
                         pair.add(edge);
                         break;
                     }

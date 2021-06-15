@@ -1,6 +1,8 @@
 package Display;
 
 import Graph.*;
+import kShortestPaths.KShortestPaths;
+import kShortestPaths.Path;
 import loadData.Data;
 
 import javax.swing.*;
@@ -29,17 +31,17 @@ public class Menu extends JPanel {
         super();
         this.drawSubway = drawSubway;
 
-
         this.kShortestPathList = new JComboBox<>();
 
-        this.startingStationName = new ScrollingMenu(data, v -> drawSubway.setStartStation(v), DEFAULT_START_STATION, "Start from:");
+        this.startingStationName = new ScrollingMenu(data, v -> drawSubway.setStartStation(v), DEFAULT_START_STATION,
+                "Start from:");
 
-        this.endingStationName = new ScrollingMenu(data, v -> drawSubway.setEndStation(v), DEFAULT_END_STATION, "End to:");
-
+        this.endingStationName = new ScrollingMenu(data, v -> drawSubway.setEndStation(v), DEFAULT_END_STATION,
+                "End to:");
 
         this.bfs = new JButton("Show the shortest path via BFS");
         this.bfs.addActionListener(e -> {
-            this.drawSubway.setClusteringInfo(null,null);
+            this.drawSubway.setClusteringInfo(null, null);
             setSelectedPathToDefault();
             System.out.println("bfs");
 
@@ -51,7 +53,7 @@ public class Menu extends JPanel {
 
         this.dijkstra = new JButton("Show the shortest path via Dijkstra");
         this.dijkstra.addActionListener(e -> {
-            this.drawSubway.setClusteringInfo(null,null);
+            this.drawSubway.setClusteringInfo(null, null);
             setSelectedPathToDefault();
             System.out.println("dijkstra");
 
@@ -64,7 +66,8 @@ public class Menu extends JPanel {
 
         this.clustering = new JButton("Graph clustering");
         this.clustering.addActionListener(e -> {
-            String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for k", "k shortest path", JOptionPane.QUESTION_MESSAGE);
+            String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for k", "k shortest path",
+                    JOptionPane.QUESTION_MESSAGE);
             if (userInputForK != null) {
                 int k;
                 try {
@@ -87,16 +90,21 @@ public class Menu extends JPanel {
                     drawSubway.setClusteringInfo(edgesToRemove, vertexSortedByCluster);
 
                 } catch (NumberFormatException exception) {
-                    JOptionPane.showMessageDialog(null, "You must enter an integer equal or greater than 1, and  equal or smaller than " + g.getNumberOfVertices(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "You must enter an integer equal or greater than 1, and  equal or smaller than "
+                                    + g.getNumberOfVertices(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
         this.kShortestPath = new JButton("Calculate the k shortest paths");
         this.kShortestPath.addActionListener(e -> {
-            this.drawSubway.setClusteringInfo(null,null);
-            String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for k", "k shortest path", JOptionPane.QUESTION_MESSAGE);
+            this.drawSubway.setClusteringInfo(null, null);
+            String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for k", "k shortest path",
+                    JOptionPane.QUESTION_MESSAGE);
             if (userInputForK != null) {
+                resetShortestPathList();
                 int k;
                 try {
                     k = Integer.parseInt(userInputForK);
@@ -105,36 +113,30 @@ public class Menu extends JPanel {
                         throw new NumberFormatException();
                     }
 
-                    //TODO: Get k shortest paths
-                    this.kShortestPathMap = new TreeMap<>();
+                    KShortestPaths kShortestPaths = new KShortestPaths(g, drawSubway.getStartStation(),
+                            drawSubway.getEndStation(), k);
 
-                    //TEMP
-                    List<Vertex> path = new ArrayList<>();
-                    path.add(data.getVertexFromStationName("Innsbrucker Platz"));
-                    path.add(data.getVertexFromStationName("Rathaus Schöneberg"));
-                    path.add(data.getVertexFromStationName("Bayerischer Platz"));
-                    path.add(data.getVertexFromStationName("Viktoria-Luise-Platz"));
-                    path.add(data.getVertexFromStationName("Nollendorfplatz"));
-                    this.kShortestPathMap.put("Path 1 : 505m", path);
-                    path = new ArrayList<>();
-                    path.add(data.getVertexFromStationName("Innsbrucker Platz"));
-                    path.add(data.getVertexFromStationName("Rathaus Schöneberg"));
-                    path.add(data.getVertexFromStationName("Bayerischer Platz"));
-                    path.add(data.getVertexFromStationName("Viktoria-Luise-Platz"));
-                    path.add(data.getVertexFromStationName("Nollendorfplatz"));
-                    path.add(data.getVertexFromStationName("Bülowstr."));
-                    path.add(data.getVertexFromStationName("Gleisdreieck"));
-                    this.kShortestPathMap.put("Path 2 : 610m", path);
-                    //END TEMP
+                    List<Path> kPaths = kShortestPaths.getKShortestPaths();
+
+                    this.kShortestPathMap = new TreeMap<>();
+                    for (int i = 0; i < kPaths.size(); i++) {
+                        Path path = kPaths.get(i);
+                        this.kShortestPathMap.put("Path " + (i + 1) + " : " + path.getDistance(g) + "m",
+                                path.getPath());
+                    }
+
                     kShortestPathList.addItem(DEFAULT_SELECTED_PATH);
+
                     for (String key : kShortestPathMap.keySet()) {
                         this.kShortestPathList.addItem(key);
                     }
+
                     this.kShortestPathList.setVisible(true);
                     System.out.println("k shortest paths");
-//                    this.kShortestPath.setEnabled(false);
+                    // this.kShortestPath.setEnabled(false);
                 } catch (NumberFormatException exception) {
-                    JOptionPane.showMessageDialog(null, "You must enter an integer equal or greater than 1", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "You must enter an integer equal or greater than 1", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -182,7 +184,7 @@ public class Menu extends JPanel {
         this.kShortestPathList.setVisible(false);
     }
 
-    public void resetStationSelection(){
+    public void resetStationSelection() {
         this.startingStationName.setSelectedItem(DEFAULT_START_STATION);
         this.endingStationName.setSelectedItem(DEFAULT_END_STATION);
     }
