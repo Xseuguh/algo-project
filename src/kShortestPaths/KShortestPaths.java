@@ -2,9 +2,7 @@ package kShortestPaths;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import Graph.Dijkstra;
@@ -23,14 +21,14 @@ public class KShortestPaths {
         this.sink = sink;
         this.source = source;
         this.K = K;
-    };
+    }
 
     public List<Path> getKShortestPaths() {
         List<Path> shortestPaths = new ArrayList<>();
         List<Path> possiblePaths = new ArrayList<>();
         Dijkstra dijkstra = new Dijkstra(this.cloneGraph().getAdjacencyList());
 
-        shortestPaths.add(dijkstra.DijkstraPathWithDist(source, sink));
+        shortestPaths.add(dijkstra.DijkstraPath(source, sink));
 
         for (int k = 1; k < this.K; k++) {
             Path lastPath = shortestPaths.get(k - 1);
@@ -50,7 +48,7 @@ public class KShortestPaths {
                 }
 
                 dijkstra = new Dijkstra(clonedGraph.getAdjacencyList());
-                Path nextPath = dijkstra.DijkstraPathWithDist(junctionNode, sink);
+                Path nextPath = dijkstra.DijkstraPath(junctionNode, sink);
 
                 Path newPath = lastPathRoot.concat(nextPath);
                 if (!possiblePaths.contains(newPath) && newPath.getLastVertex() == sink)
@@ -68,7 +66,7 @@ public class KShortestPaths {
     }
 
     public Graph cloneGraph() {
-        List<Vertex> vertices = new ArrayList(this.graph.getAdjacencyList().keySet());
+        List<Vertex> vertices = new ArrayList<>(this.graph.getAdjacencyList().keySet());
         Graph newGraph = new Graph(vertices);
 
         vertices.forEach(vertex -> {

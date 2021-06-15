@@ -97,8 +97,6 @@ public class Graph {
         // As our graph is undirected, we can add the reversed edge
         Edge edgeFromDestinationToSource = new Edge(weight, destination, source);
         this.adjacencyList.get(destination).add(edgeFromDestinationToSource);
-
-        // this.graphEdges.add(List.of(edgeFromSourceToDestination,edgeFromDestinationToSource));
     }
 
     public void setGraphEdges() {

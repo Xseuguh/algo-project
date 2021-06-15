@@ -33,7 +33,6 @@ public class Clustering {
         this.graphEdges = new HashSet<>();
         for (Set<Edge> listEdge : graphEdges) {
             this.graphEdges.add(listEdge);
-
         }
     }
 
@@ -112,7 +111,7 @@ public class Clustering {
         Dijkstra dijkstra = new Dijkstra(this.adjacencyList);
 
         for (List<Vertex> vertexList : verticesCombinations) {
-            shortestPathsTemp.put(vertexList, vertexPathToEdgePath(dijkstra.DijkstraPath(vertexList.get(0), vertexList.get(1))));
+            shortestPathsTemp.put(vertexList, vertexPathToEdgePath(dijkstra.DijkstraPath(vertexList.get(0), vertexList.get(1)).getPath()));
         }
         return shortestPathsTemp;
     }

@@ -27,6 +27,9 @@ public class Menu extends JPanel {
     private static final String DEFAULT_END_STATION = "--Select the ending station";
     private static final String DEFAULT_SELECTED_PATH = "--Select the path to display";
 
+
+    private static final Comparator<String> PATH_NUMERATED_COMPARATOR = Comparator.comparingInt(String::length).thenComparing(p -> p);
+
     public Menu(Data data, Graph g, DrawSubway drawSubway) {
         super();
         this.drawSubway = drawSubway;
@@ -44,11 +47,9 @@ public class Menu extends JPanel {
             resetShortestPathList();
             this.drawSubway.setClusteringInfo(null, null);
             setSelectedPathToDefault();
-            System.out.println("bfs");
 
             BFS bfs = new BFS(g.getAdjacencyList());
             List<Vertex> path = bfs.BFSPath(drawSubway.getStartStation(), drawSubway.getEndStation());
-            System.out.println(path);
             drawSubway.setPath(path);
         });
 
@@ -57,18 +58,15 @@ public class Menu extends JPanel {
             resetShortestPathList();
             this.drawSubway.setClusteringInfo(null, null);
             setSelectedPathToDefault();
-            System.out.println("dijkstra");
 
             Dijkstra dijkstra = new Dijkstra(g.getAdjacencyList());
-            List<Vertex> path = dijkstra.DijkstraPath(drawSubway.getStartStation(), drawSubway.getEndStation());
-
+            List<Vertex> path = dijkstra.DijkstraPath(drawSubway.getStartStation(), drawSubway.getEndStation()).getPath();
             drawSubway.setPath(path);
-
         });
 
         this.clustering = new JButton("Graph clustering");
         this.clustering.addActionListener(e -> {
-            String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for k", "k shortest path",
+            String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for the number of clusters", "Clustering",
                     JOptionPane.QUESTION_MESSAGE);
             if (userInputForK != null) {
                 resetShortestPathList();
@@ -121,7 +119,7 @@ public class Menu extends JPanel {
 
                     List<Path> kPaths = kShortestPaths.getKShortestPaths();
 
-                    this.kShortestPathMap = new TreeMap<>();
+                    this.kShortestPathMap = new TreeMap<>(PATH_NUMERATED_COMPARATOR);
                     for (int i = 0; i < kPaths.size(); i++) {
                         Path path = kPaths.get(i);
                         this.kShortestPathMap.put("Path " + (i + 1) + " : " + path.getDistance(g) + "m",

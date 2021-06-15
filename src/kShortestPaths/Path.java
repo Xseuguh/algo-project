@@ -2,10 +2,8 @@ package kShortestPaths;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import Graph.Vertex;
 import Graph.Edge;
@@ -14,23 +12,12 @@ import Graph.Graph;
 public class Path {
     private List<Vertex> path;
 
-    public Path() {
-    }
-
     public Path(List<Vertex> path) {
         this.path = path;
     }
 
     public List<Vertex> getPath() {
         return this.path;
-    }
-
-    public void setPath(List<Vertex> path) {
-        this.path = path;
-    }
-
-    public void addVertex(Vertex vertex) {
-        this.path.add(vertex);
     }
 
     public Vertex getLastVertex() {
@@ -45,9 +32,6 @@ public class Path {
         return this.path.get(i);
     }
 
-    /**
-     * end exclude
-     */
     public Path getSubPath(int start, int end) {
         if (end <= size())
             return new Path(this.path.subList(start, end));

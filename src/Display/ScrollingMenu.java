@@ -6,9 +6,7 @@ import loadData.Data;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class ScrollingMenu extends JPanel {
 

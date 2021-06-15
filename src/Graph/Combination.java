@@ -7,10 +7,6 @@ public class Combination {
     private List<int[]> combinations;
     private Map<Integer,Vertex> verticesIDMap;
 
-    public Map<Integer,Vertex> getVerticesIDMap() {
-        return this.verticesIDMap;
-    }
-
     public Combination(Map<Vertex, Set<Edge>> adjacencyList) {
         this.adjacencyList = adjacencyList;
         this.verticesIDMap = graphVertexIDs();
@@ -37,9 +33,9 @@ public class Combination {
 
     public List<List<Vertex>> getNodePairs() {
         this.combinations = generate(adjacencyList.size(), 2);
-        List<List<Vertex>> verticesCombinationsTemp = new ArrayList<List<Vertex>>();
+        List<List<Vertex>> verticesCombinationsTemp = new ArrayList<>();
         for (int[] intList : combinations) {
-            List<Vertex> vertexPair = new ArrayList<Vertex>();
+            List<Vertex> vertexPair = new ArrayList<>();
             vertexPair.add(verticesIDMap.get(intList[0]));
             vertexPair.add(verticesIDMap.get(intList[1]));
             if (!vertexPair.get(0).equals(vertexPair.get(1))) {
@@ -48,8 +44,7 @@ public class Combination {
         }
         return verticesCombinationsTemp;
     }
-    
-    // BULLSHIT
+
 
     public Map<Integer,Vertex> graphVertexIDs() {
         Map<Integer,Vertex> res = new HashMap<>();
