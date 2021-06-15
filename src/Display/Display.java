@@ -24,7 +24,7 @@ public class Display extends JFrame implements ComponentListener {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         this.drawSubway = new DrawSubway(graph, new int[]{this.getWidth(), this.getHeight()});
-        this.menu = new Menu(data, drawSubway);
+        this.menu = new Menu(data, graph, drawSubway);
         this.drawSubway.setMenu(menu);
 
 
