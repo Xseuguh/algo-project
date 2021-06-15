@@ -41,6 +41,7 @@ public class Menu extends JPanel {
 
         this.bfs = new JButton("Show the shortest path via BFS");
         this.bfs.addActionListener(e -> {
+            resetShortestPathList();
             this.drawSubway.setClusteringInfo(null, null);
             setSelectedPathToDefault();
             System.out.println("bfs");
@@ -53,6 +54,7 @@ public class Menu extends JPanel {
 
         this.dijkstra = new JButton("Show the shortest path via Dijkstra");
         this.dijkstra.addActionListener(e -> {
+            resetShortestPathList();
             this.drawSubway.setClusteringInfo(null, null);
             setSelectedPathToDefault();
             System.out.println("dijkstra");
@@ -69,6 +71,7 @@ public class Menu extends JPanel {
             String userInputForK = JOptionPane.showInputDialog(null, "Enter a value for k", "k shortest path",
                     JOptionPane.QUESTION_MESSAGE);
             if (userInputForK != null) {
+                resetShortestPathList();
                 int k;
                 try {
                     k = Integer.parseInt(userInputForK);
