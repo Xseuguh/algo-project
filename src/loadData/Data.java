@@ -121,8 +121,6 @@ public class Data {
         vertexFromStationName = new TreeMap<>();
         //Map to convert a stop id to its station name
         Map<String, String> stationNameFromStopId = new HashMap<>();
-//        //Map to convert a stop id to its station id
-//        Map<String, String> stationIdFromStopId = new HashMap<>();
         stationNames = new TreeSet<>();
         while ((line = br.readLine()) != null) {
             String[] dataSplit = parseData(line);
@@ -130,17 +128,14 @@ public class Data {
             String stopID = dataSplit[0];
             for (List<String> sortedStopsMap : lineWithStops.values()) {
                 if (sortedStopsMap.contains(stopID)) {
-//                    String stopName = dataSplit[2];
                     String stopName = removeUnwantedInfoFromStationName(dataSplit[2]);
                     String parentID = dataSplit[7];
 
-//                    stationNameFromStopId.put(stopID, parentID);
                     stationNameFromStopId.put(stopID, stopName);
 
                     double latitude = Double.parseDouble(dataSplit[4]);
                     double longitude = Double.parseDouble(dataSplit[5]);
 
-//                    vertexFromStationId.put(parentID, new Vertex(stopName, latitude, longitude, parentID));
                     vertexFromStationName.put(stopName, new Vertex(stopName, latitude, longitude, parentID));
 
                     stationNames.add(stopName);

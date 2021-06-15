@@ -238,10 +238,6 @@ public class DrawSubway extends JPanel implements MouseListener, MouseMotionList
     private void drawClusters(Graphics g) {
         if (this.vertexSortedByCluster != null) {
             for (int clusterIndex : this.vertexSortedByCluster.keySet()) {
-//                Random rand = new Random();
-//                float red = rand.nextFloat();
-//                float green = rand.nextFloat();
-//                float blue = rand.nextFloat();
                 g.setColor(CLUSTER_COLOR_MAP.get(clusterIndex));
                 for (Vertex v : this.vertexSortedByCluster.get(clusterIndex)) {
                     int[] coordinates = cartesianCoordinatesFromVertex.get(v);
